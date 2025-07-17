@@ -4,6 +4,7 @@ from qiskit import transpile
 from qiskit import QuantumCircuit
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 
@@ -117,4 +118,59 @@ def plot_backend_errors_and_counts(backends, errors_and_counts_list):
     ax.set_xticks(x + width)
     ax.set_xticklabels(count_labels)
     ax.legend()
+    plt.show()
+
+def plot_counts_barplot(
+    counts_dict,
+    title,
+    subtitle="",
+    color="steelblue",
+    optimal_solutions=None,
+    top_n=30,
+    filename=None
+):
+    rcParams['font.family'] = 'sans-serif'
+    rcParams['font.sans-serif'] = ['Helvetica', 'Arial', 'DejaVu Sans']
+
+    sorted_counts = dict(sorted(counts_dict.items(), key=lambda item: item[1], reverse=True)[:top_n])
+    states = list(sorted_counts.keys())
+    values = list(sorted_counts.values())
+    total_unique = len(counts_dict)
+
+    fig, ax = plt.subplots(figsize=(16, 8))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+
+    for i, state in enumerate(states):
+        is_optimal = optimal_solutions and state in optimal_solutions
+        bar_alpha = 1.0 if is_optimal else 0.5
+        ax.bar(i, values[i], color=color, alpha=bar_alpha, edgecolor='none')
+
+    for i, v in enumerate(values):
+        ax.text(i, v + max(values)*0.01, str(v), ha="center", va="bottom", fontsize=10, rotation=90)
+
+    ax.set_xticks(range(len(states)))
+    ax.set_xticklabels(states, rotation=90, fontsize=11)
+    ax.set_ylabel("Shots", fontsize=13)
+    ax.set_xlabel("Measured bitstrings", fontsize=13)
+
+    ax.set_title(title, fontsize=28, fontweight='bold', loc='left', pad=35)
+
+    ax.text(0, 1.02, f"{subtitle} | Showing {top_n} of {total_unique} bitstrings",
+            transform=ax.transAxes, fontsize=17, ha='left', va='bottom', style='italic')
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.tick_params(axis='x', length=0)
+    ax.tick_params(axis='y', length=0)
+    ax.yaxis.grid(True, linestyle='-', linewidth=1.2, color="#CBCBCB")
+    ax.xaxis.grid(False)
+
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.85, bottom=0.3)
+
+    if filename:
+        plt.savefig(filename, dpi=300, bbox_inches="tight", facecolor='white')
     plt.show()

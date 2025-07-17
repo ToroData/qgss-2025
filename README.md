@@ -1,4 +1,5 @@
 # qgss-2025
+
 Qiskit Global Summer School: The Past, Present and Future of Quantum Computing
 
 # Launch on qBraid
@@ -9,4 +10,8 @@ To open the QGSS files, labs, and resources directly on qBraid, click this butto
 
 [<img src="https://qbraid-static.s3.amazonaws.com/logos/Launch_on_qBraid_white.png" width="150">](https://account.qbraid.com/?gitHubUrl=https://github.com/qiskit-community/qgss-2025.git&api=v2)
 
-
+```
+conda env create -f qiskit.yml
+conda activate qiskit
+python -m ipykernel install --user --name=qiskit
+```
